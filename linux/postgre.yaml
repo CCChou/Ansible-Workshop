@@ -1,0 +1,78 @@
+---
+- hosts: linux
+  vars:
+    dbname: "test"
+    username: "test"
+    password: "redhat"
+  tasks:
+  - name: "Install postgresql"
+    ansible.builtin.yum:
+      name: "{{ item }}" 
+      state: present
+    loop:
+    - postgresql-server
+    - pip
+
+  - name: "Install python packages"
+    ansible.builtin.pip:
+      name: psycopg2-binary
+      state: present
+
+  - name: "Check data init or not"
+    ansible.builtin.stat:
+      path: /var/lib/pgsql/data/pg_hba.conf
+    register: postgres_data
+    
+  - name: "Init postgresql"
+    ansible.builtin.shell: postgresql-setup --initdb
+    when: not postgres_data.stat.exists
+
+  - name: "Start postgresql"
+    ansible.builtin.service:
+      name: postgresql
+      state: started
+      enabled: yes
+
+  - name: "Create DB"
+    community.postgresql.postgresql_db:
+      state: present
+      name: "{{ dbname }}"
+    become: yes
+    become_user: postgres
+
+  - name: "Create DB user"
+    community.postgresql.postgresql_user:
+      state: present
+      name: "{{ username }}"
+      password: "{{ password }}"
+    become: yes
+    become_user: postgres
+
+  - name: "Grant privileges"
+    community.postgresql.postgresql_privs:
+      type: database
+      database: "{{ dbname }}"
+      roles: "{{ username }}"
+      grant_option: no
+      privs: all
+    become: yes
+    become_user: postgres
+
+  - name: "Add hba record"
+    community.postgresql.postgresql_pg_hba:
+      dest: /var/lib/pgsql/data/pg_hba.conf
+      contype: host
+      databases: "{{ dbname }}"
+      method: password
+      users: "{{ username }}"
+      create: true
+    become: yes
+    become_user: postgres
+    notify: Restart postgresql
+
+  handlers:
+  - name: "Restart postgresql"
+    ansible.builtin.service:
+      name: postgresql
+      state: restarted
+
