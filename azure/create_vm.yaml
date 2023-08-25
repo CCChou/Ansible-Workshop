@@ -1,0 +1,59 @@
+- name: Create Azure VM
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Create virtual network
+    azure_rm_virtualnetwork:
+      resource_group: openenv-sqwwh
+      name: myVnet
+      address_prefixes: "10.0.0.0/16"
+  - name: Add subnet
+    azure_rm_subnet:
+      resource_group: openenv-sqwwh
+      name: mySubnet
+      address_prefix: "10.0.1.0/24"
+      virtual_network: myVnet
+  - name: Create public IP address
+    azure_rm_publicipaddress:
+      resource_group: openenv-sqwwh
+      allocation_method: Static
+      name: myPublicIP
+    register: output_ip_address
+  - name: Public IP of VM
+    debug:
+      msg: "The public IP is {{ output_ip_address.state.ip_address }}."
+  - name: Create Network Security Group that allows SSH
+    azure_rm_securitygroup:
+      resource_group: openenv-sqwwh
+      name: myNetworkSecurityGroup
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 1001
+          direction: Inbound
+  - name: Create virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: openenv-sqwwh
+      name: myNIC
+      virtual_network: myVnet
+      subnet: mySubnet
+      public_ip_name: myPublicIP
+      security_group: myNetworkSecurityGroup
+  - name: Create VM
+    azure_rm_virtualmachine:
+      resource_group: openenv-sqwwh
+      name: myVM
+      vm_size: Standard_DS1_v2
+      admin_username: azureuser
+      ssh_password_enabled: false
+      ssh_public_keys:
+        - path: /home/azureuser/.ssh/authorized_keys
+          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDdD5ex1PMnSnItW5Mz8clJS8uzFKEFcXn5HXQmjz09cCciNBZS/OTytQzPmRhEDQrobstvsxW1T1IY32m48VU1Y/jUfSw+wrM/yQRze3Xct7fRXPnE1xtWxzXWN8H8RquU3isXxn6wujjYLprmAWub+nCwN7yX4KjEPEGkD+6DwwBQ4WIzzvclCTPao1LqHDwKaE9ifyhwrQhtobx9NZEBSi7aXQ0JIAwZu53WPaK6HCcS6PMO/bo/PXnlL0xwFP6J8vs8nEIoTuNXRPzBYUBLGQztcQQPx+atQsjNm7bpWsSLTgJt/n8ClEieAHAf76AcvgQUoOfwsNctRNB5pOwXTB6TayhY29Qte9ImBiO67OyUgyJwq9+tnqgwJjqSwgA9q3wheuRvQOrWRL2GEQ5kHNqmoqmjHdR0DX+JCnRaRimWcidWdD6BNTWesR13sO1EJDwi+ytFDndPZUZVHYmwsjB8DyLzb9jwVVOatJHkV8860Eomd7jW31PRWk52jrM= root@aap-controller.rhtw.com"
+      network_interfaces: myNIC
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.5'
+        version: latest
