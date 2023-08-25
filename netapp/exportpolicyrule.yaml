@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  collections:
+  - netapp.ontap
+  vars_files:
+  - vars.yaml
+  tasks:
+  - name: "Modify Default Policy"
+    netapp.ontap.na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: test
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      super_user_security: any
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+
+  - name: "Create ExportPolicyRule"
+    netapp.ontap.na_ontap_export_policy_rule:
+      state: present
+      name: allow_linux
+      rule_index: 100
+      vserver: test
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      protocol: nfs,nfs3,nfs4
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: true
+      ntfs_unix_security: ignore
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
