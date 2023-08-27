@@ -1,0 +1,28 @@
+---
+- hosts: linux
+  vars:
+    rhsa_name: "RHSA-2023:4201"
+  tasks:
+  - name: "Check installed or not"
+    ansible.builtin.shell: "yum updateinfo list security --installed| grep {{ rhsa_name }}"
+    register: installed
+    ignore_errors: true
+
+  - name: "Pring installed message"
+    ansible.builtin.debug:
+      msg: "Already install {{ rhsa_name }}"
+    when: installed.rc == 0
+
+  - block:
+    - name: "Check RHSA availables"
+      ansible.builtin.shell: "yum updateinfo list updates security|grep {{ rhsa_name }}"
+      register: packages
+
+    - name: "Install RHSA"
+      ansible.builtin.shell: "yum update --advisory={{ rhsa_name }} -y"
+        
+    rescue:
+    - name: "Print error"
+      ansible.builtin.debug:
+        msg: "Can not find patch" 
+    when: installed.rc != 0
