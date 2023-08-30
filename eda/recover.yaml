@@ -1,0 +1,6 @@
+- hosts: linux
+  tasks:
+  - name: Recover /etc/hosts
+    ansible.builtin.template:
+      src: "templates/hosts.j2"
+      dest: "/etc/hosts"
