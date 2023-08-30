@@ -10,5 +10,5 @@
   - name: check event
     condition: event.payload.message != ""
     action:
-      run_playbook:
-        name: recover.yaml
+      run_job_template:
+        name: Recover
