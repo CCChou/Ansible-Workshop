@@ -1,0 +1,69 @@
+---
+- hosts: win
+  tasks:
+  - name: "Install Chocolatey"
+    win_chocolatey:
+      name:
+      - chocolatey
+      - chocolatey-core.extension
+      state: present
+
+  - name: "Install packages"
+    win_chocolatey:
+      name: "{{ item.name }}"
+      version: "{{ item.version }}"
+      state: present
+    loop:
+    - { name: 'git', version: '2.42.0' }
+    - { name: 'dotnet-sdk', version: '7.0.400' }
+    - { name: 'dotnet-aspnetcoremodule-v2', version: '17.0.23196' }
+
+  - name: "Install IIS"
+    win_feature:
+      name: "web-server"
+      state: present
+      restart: yes
+      include_sub_features: yes
+      include_management_tool: yes
+
+  - name: "Clone repository"
+
+  - name: "Publish application"
+
+  - name: Create sample web app Application Pool
+    win_iis_webapppool:
+      name: SampleAppPool
+      state: started
+      attributes:
+        enable32BitAppOnWin64: False
+        managedRuntimeVersion: null
+
+  - name: Add IIS_IUSRS to sample app directory
+    win_acl:
+      path: "C:\\sites\\demo\\app"
+      user: IIS_IUSRS
+      rights: FullControl
+      type: allow
+      state: present
+      inherit: ContainerInherit, ObjectInherit
+      propagation: 'None'
+
+  - name: Add IIS APPPOOL\SampleAppPool to sample app directory
+    win_acl:
+      path: "C:\\sites\\demo"
+      user: IIS APPPOOL\SampleAppPool
+      rights: FullControl
+      type: allow
+      state: present
+      inherit: ContainerInherit, ObjectInherit
+      propagation: 'None'
+
+  - name: "Start IIS"
+    win_iis_website:
+      name: demo
+      state: started
+      port: 80
+      ip: 10.9.92.22
+      physical_path: "C:\\sites\\demo\\app"
+      application_pool: SampleAppPool
+
