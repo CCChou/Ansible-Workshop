@@ -2,7 +2,7 @@
 - hosts: linux
   vars:
     dbname: "test"
-    username: "test"
+    username: "root"
     password: "redhat"
   tasks:
   - name: "Install postgresql"
@@ -48,6 +48,14 @@
     become: yes
     become_user: postgres
 
+  - name: ""
+    ansible.builtin.lineinfile:
+      dest: /var/lib/pgsql/data/postgresql.conf
+      line: "listen_addresses = '*'"
+      state: present
+    become: yes
+    become_user: postgres
+
   - name: "Grant privileges"
     community.postgresql.postgresql_privs:
       type: database
@@ -65,6 +73,7 @@
       databases: "{{ dbname }}"
       method: password
       users: "{{ username }}"
+      source: 10.9.92.0/24
       create: true
     become: yes
     become_user: postgres

@@ -1,0 +1,8 @@
+---
+- hosts: linux
+  tasks:
+  - name: "Check telnet disabled"
+    ansible.builtin.service:
+      name: telnet
+      state: stopped
+      enabled: no
