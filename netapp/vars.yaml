@@ -2,4 +2,12 @@
 hostname: 10.9.92.31
 username: admin
 password: P@ssw0rd
+vserver_name: test
+volume_name: test
+volume_size: 2
+volume_unit: gb
+nfs_ip: 10.9.92.34
+nfs_netmask: 255.255.255.0
+allowed_ips: 10.9.92.0/24
+
 

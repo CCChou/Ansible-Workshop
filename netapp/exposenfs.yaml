@@ -1,0 +1,89 @@
+---
+- hosts: localhost
+  collections:
+  - netapp.ontap
+  vars_files:
+  - vars.yaml
+  tasks:
+  - name: "Create StorageVM"
+    na_ontap_svm:
+      state: present
+      name: "{{ vserver_name }}"
+      services:
+        nfs:
+          allowed: true
+          enabled: true
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+
+  - name: "Create volume"
+    netapp.ontap.na_ontap_volume:
+      state: present
+      name: "{{ volume_name }}"
+      aggregate_name: ontap_select_node_VM_DISK_1
+      vserver: "{{ vserver_name }}"
+      size: "{{ volume_size }}"
+      size_unit: "{{ volume_unit }}"
+      policy: default
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+
+  - name: "Create LIFs"
+    netapp.ontap.na_ontap_interface:
+      state: present
+      interface_name: nfs-data
+      home_port: e0a
+      home_node: ontap-select-node
+      admin_status: up
+      failover_scope: home_node_only
+      is_auto_revert: true
+      interface_type: ip
+      address: "{{ nfs_ip }}"
+      netmask: "{{ nfs_netmask }}"
+      vserver: "{{ vserver_name }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+
+  - name: "Modify Default Policy"
+    netapp.ontap.na_ontap_export_policy_rule:
+      state: present
+      name: default
+      vserver: "{{ vserver_name }}"
+      client_match: 0.0.0.0/0
+      ro_rule: any
+      rw_rule: any
+      super_user_security: any
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+
+  - name: "Create ExportPolicyRule"
+    netapp.ontap.na_ontap_export_policy_rule:
+      state: present
+      name: allow_linux
+      rule_index: 100
+      vserver: "{{ vserver_name }}"
+      client_match: "{{ allowed_ips }}"
+      ro_rule: any
+      rw_rule: any
+      protocol: nfs,nfs3,nfs4
+      super_user_security: any
+      anonymous_user_id: 65534
+      allow_suid: true
+      ntfs_unix_security: ignore
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
