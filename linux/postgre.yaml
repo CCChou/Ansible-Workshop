@@ -22,6 +22,14 @@
     ansible.builtin.stat:
       path: /var/lib/pgsql/data/pg_hba.conf
     register: postgres_data
+
+  - name: "Mount nfs storage"
+    ansible.posix.mount:
+      src: 10.9.92.34:/
+      path: /var/lib/pgsql/data
+      state: mounted
+      fstype: nfs
+    when: not postgres_data.stat.exists
     
   - name: "Init postgresql"
     ansible.builtin.shell: postgresql-setup --initdb
