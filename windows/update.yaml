@@ -1,0 +1,7 @@
+---
+- hosts: win
+  tasks:
+  - name: "Install Patches"
+    win_updates:
+      category_names: SecurityUpdates
+      state: searched
