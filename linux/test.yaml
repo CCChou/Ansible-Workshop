@@ -1,0 +1,8 @@
+---
+  - hosts: localhost
+    collections:
+      - cyberark.conjur
+    tasks:
+      - name: Lookup variable in Conjur
+        debug:
+          msg: "{{ lookup('cyberark.conjur.conjur_variable', 'tower/ansible') }}"
