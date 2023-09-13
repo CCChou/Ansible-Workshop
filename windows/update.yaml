@@ -1,8 +1,11 @@
 ---
 - hosts: win
+  vars:
+    kb_name: KB4577586
   tasks:
   - name: "Install Patches"
     win_updates:
       category_names: SecurityUpdates
-      state: searched
-      log_path: C:\ansible_wu.txt
+      state: installed
+      accept_list:
+      - "{{ kb_name }}"
