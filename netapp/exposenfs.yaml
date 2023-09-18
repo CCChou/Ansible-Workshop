@@ -2,6 +2,7 @@
 - hosts: localhost
   collections:
   - netapp.ontap
+  - cyberark.conjur
   vars_files:
   - vars.yaml
   tasks:
