@@ -26,7 +26,7 @@
   - name: "Mount nfs storage"
     ansible.posix.mount:
       src: 10.9.92.34:/
-      path: /var/lib/pgsql/data
+      path: /var/lib/pgsql
       state: mounted
       fstype: nfs
     when: not postgres_data.stat.exists
