@@ -33,7 +33,7 @@
   
   - name: "Change directory permission"
     ansible.builtin.file:
-      path: /etc/foo.conf
+      path: /var/lib/pgsql
       owner: postgres
       group: postgres
     when: not postgres_data.stat.exists
