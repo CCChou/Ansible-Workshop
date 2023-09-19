@@ -2,10 +2,10 @@
 - hosts: linux
   remote_user: azureuser
   tasks:
-  - name: "Check telnet disabled"
+  - name: "Check kdump enabled"
     ansible.builtin.service:
       name: kdump
-      state: present
+      state: started
       enabled: yes
     become: true
     become_user: root
