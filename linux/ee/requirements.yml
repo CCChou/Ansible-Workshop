@@ -3,3 +3,4 @@ collections:
   - cyberark.conjur
   - ansible.posix
   - ansible.windows
+  - community.postgresql
