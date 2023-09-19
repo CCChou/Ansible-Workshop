@@ -30,6 +30,13 @@
       state: mounted
       fstype: nfs
     when: not postgres_data.stat.exists
+  
+  - name: "Change directory permission"
+    ansible.builtin.file:
+      path: /etc/foo.conf
+      owner: postgres
+      group: postgres
+    when: not postgres_data.stat.exists
     
   - name: "Init postgresql"
     ansible.builtin.shell: postgresql-setup --initdb
