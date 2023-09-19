@@ -1,5 +1,9 @@
 ---
 - hosts: win
+  vars:
+    iis_ip: 10.9.92.22
+    code_path: C:\\apps\\postgresql-dotnet-core\\PostgreSqlDotnetCore
+    iis_site_path: C:\\sites\\demo
   tasks:
   - name: "Install Chocolatey"
     win_chocolatey:
@@ -26,9 +30,10 @@
       include_sub_features: yes
       include_management_tool: yes
 
-  - name: "Clone repository"
-
   - name: "Publish application"
+    win_shell: "dotnet publish --output {{ iis_site_path }}"
+    args:
+      chdir: "{{ code_path }}"
 
   - name: Create sample web app Application Pool
     win_iis_webapppool:
@@ -40,7 +45,7 @@
 
   - name: Add IIS_IUSRS to sample app directory
     win_acl:
-      path: "C:\\sites\\demo\\app"
+      path: "{{ iis_site_path }}\\app"
       user: IIS_IUSRS
       rights: FullControl
       type: allow
@@ -50,7 +55,7 @@
 
   - name: Add IIS APPPOOL\SampleAppPool to sample app directory
     win_acl:
-      path: "C:\\sites\\demo"
+      path: "{{ iis_site_path }}"
       user: IIS APPPOOL\SampleAppPool
       rights: FullControl
       type: allow
@@ -63,6 +68,6 @@
       name: demo
       state: started
       port: 80
-      ip: 10.9.92.22
-      physical_path: "C:\\sites\\demo\\app"
+      ip: "{{ iis_ip }}"
+      physical_path: "{{ iis_site_path }}\\app"
       application_pool: SampleAppPool
