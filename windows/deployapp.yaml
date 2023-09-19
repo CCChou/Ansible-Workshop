@@ -66,4 +66,3 @@
       ip: 10.9.92.22
       physical_path: "C:\\sites\\demo\\app"
       application_pool: SampleAppPool
-
