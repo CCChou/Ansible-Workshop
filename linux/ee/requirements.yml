@@ -4,3 +4,4 @@ collections:
   - ansible.posix
   - ansible.windows
   - community.postgresql
+  - chocolatey.chocolatey
