@@ -5,3 +5,4 @@ collections:
   - ansible.windows
   - community.postgresql
   - chocolatey.chocolatey
+  - community.windows
