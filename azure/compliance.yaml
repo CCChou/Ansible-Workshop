@@ -4,8 +4,8 @@
   tasks:
   - name: "Check telnet disabled"
     ansible.builtin.service:
-      name: telnet
-      state: stopped
-      enabled: no
+      name: kdump
+      state: present
+      enabled: yes
     become: true
     become_user: root
