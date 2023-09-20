@@ -1,8 +1,8 @@
 ---
 - hosts: linux
   tasks:
-  - name: "Check telnet disabled"
+  - name: "Check kdump enabled"
     ansible.builtin.service:
-      name: telnet
-      state: stopped
-      enabled: no
+      name: kdump
+      state: started
+      enabled: yes
