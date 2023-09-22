@@ -1,0 +1,45 @@
+---
+- name: "Stop PostgreSQL"
+  hosts: linux
+  tasks:
+  - name: "Stop postgresql"
+    ansible.builtin.service:
+      name: postgresql
+      state: stopped
+      enabled: no
+
+  - name: "Umount nfs storage"
+    ansible.posix.mount:
+      src: 10.9.92.34:/
+      path: /var/lib/pgsql
+      state: unmounted
+      fstype: nfs
+
+- name: "Start PostgreSQL"
+  hosts: drlinux
+  tasks:
+  - name: "Install postgresql"
+    ansible.builtin.yum:
+      name: "{{ item }}" 
+      state: present
+    loop:
+    - postgresql-server
+    - pip
+
+  - name: "Install python packages"
+    ansible.builtin.pip:
+      name: psycopg2-binary
+      state: present
+
+  - name: "Mount nfs storage"
+    ansible.posix.mount:
+      src: 10.9.92.34:/
+      path: /var/lib/pgsql
+      state: mounted
+      fstype: nfs
+
+  - name: "Start postgresql"
+    ansible.builtin.service:
+      name: postgresql
+      state: started
+      enabled: yes

@@ -1,0 +1,15 @@
+---
+- name: "Stop Application"
+  hosts: win
+  vars:
+    iis_ip: 10.9.92.22
+    iis_site_path: C:\\sites\\demo
+  tasks:
+  - name: "Stop IIS"
+    win_iis_website:
+      name: demo
+      state: stopped
+      port: 80
+      ip: "{{ iis_ip }}"
+      physical_path: "{{ iis_site_path }}\\app"
+      application_pool: SampleAppPool
