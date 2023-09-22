@@ -32,7 +32,7 @@
     - { name: 'dotnet-aspnetcoremodule-v2', version: '17.0.23196' }
 
   - name: "Publish application"
-    win_shell: "dotnet publish --output {{ iis_site_path }}"
+    win_shell: "dotnet publish --output {{ iis_site_path }}\\app /p:EnvironmentName=Production"
     args:
       chdir: "{{ code_path }}"
 
