@@ -31,7 +31,7 @@
       include_management_tool: yes
 
   - name: "Publish application"
-    win_shell: "dotnet publish --output {{ iis_site_path }}"
+    win_shell: "dotnet publish --output {{ iis_site_path }}\\app"
     args:
       chdir: "{{ code_path }}"
 
