@@ -3,7 +3,8 @@
   vars:
     iis_ip: 10.9.92.22
     iis_site_path: C:\\sites\\demo
-- name: "Stop IIS"
+  tasks:
+  - name: "Stop IIS"
     win_iis_website:
       name: demo
       state: stopped
