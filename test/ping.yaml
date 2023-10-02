@@ -1,0 +1,9 @@
+---
+- hosts: win
+  tasks:
+  - name: "Ping windows"
+    ansible.windows.win_ping:
+- hosts: linux
+  tasks:
+  - name: "Ping linux"
+    ansible.builtin.ping:
