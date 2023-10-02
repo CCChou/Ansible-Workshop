@@ -1,0 +1,8 @@
+---
+- hosts: win
+  tasks:
+  - name: Set service startup mode to auto and ensure it is started
+    ansible.windows.win_service:
+      name: Cryptographic Services
+      start_mode: auto
+      state: started
