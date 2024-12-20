@@ -1,0 +1,12 @@
+---
+- hosts: linux
+  tasks:
+  - name: "Print tag1"
+    ansible.builtin.debug:
+      msg: "This is tag1"
+    tags: tag1
+
+  - name: "Print tag2"
+    ansible.builtin.debug:
+      msg: "This is tag2"
+    tags: tag2
